@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "devhttps": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 NODE_OPTIONS=\"--no-warnings\" npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -20,6 +21,7 @@
     "@types/node": "^20.0.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "cross-env": "^10.1.0",
     "eslint": "^9.x",
     "eslint-config-next": "16.2.9",
     "sass": "^1.102.0",
