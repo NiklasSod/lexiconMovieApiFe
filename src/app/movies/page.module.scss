@@ -35,6 +35,12 @@
   font-size: 0.95rem;
 }
 
+.mainHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -56,5 +62,9 @@
 
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .mainHeader {
+    flex-direction: column;
   }
 }
