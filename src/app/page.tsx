@@ -1,4 +1,3 @@
-import Header from '@/components/header/Header'
 import FeaturedMovie from '@/components/movie/FeaturedMovie'
 import { getMovieWithDetail } from '@/services/movies'
 import type { MovieWithDetail } from '@/types/movie'
@@ -15,7 +14,6 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
       <main>
         {movie ? (
           <FeaturedMovie movie={movie} />

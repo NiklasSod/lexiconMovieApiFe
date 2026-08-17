@@ -157,21 +157,6 @@
   font-size: 0.9rem;
 }
 
-.stars {
-  display: inline-flex;
-  gap: 2px;
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.starFilled {
-  color: #fbbf24;
-}
-
-.starEmpty {
-  color: #334155;
-}
-
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

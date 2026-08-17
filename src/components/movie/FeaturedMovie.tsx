@@ -5,42 +5,18 @@ import Image from 'next/image'
 import type { MovieWithDetail } from '@/types/movie'
 import styles from './FeaturedMovie.module.scss'
 import { isProduction } from '../../services/config'
+import { formatDuration, averageRating } from '../../utils/movie'
 import ReviewList from '../reviewList/ReviewList'
+import Stars from '../stars/Stars'
 
-const formatDuration = (minutes: number) => {
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
-  return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+interface FeaturedMovieProps {
+  movie: MovieWithDetail
 }
 
-interface StartsProps {
-  rating: number
-}
-
-export const Stars = ({ rating }: StartsProps) => {
-  return (
-    <span className={styles.stars} aria-label={`${rating} out of 5 stars`}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <span
-          key={star}
-          aria-hidden="true"
-          className={star <= rating ? styles.starFilled : styles.starEmpty}
-        >
-          ★
-        </span>
-      ))}
-    </span>
-  )
-}
-
-export default function FeaturedMovie({ movie }: { movie: MovieWithDetail }) {
+export default function FeaturedMovie({ movie }: FeaturedMovieProps) {
   const reviewCount = movie.reviews.length
   const [visibleReviews, setVisibleReviews] = useState(2)
-  const averageRating =
-    reviewCount > 0
-      ? movie.reviews.reduce((sum, review) => sum + review.rating, 0) /
-        reviewCount
-      : 0
+  const featuredAverageRating = averageRating(movie)
 
   return (
     <section className={styles.section}>
@@ -76,28 +52,30 @@ export default function FeaturedMovie({ movie }: { movie: MovieWithDetail }) {
             {movie.year} · {formatDuration(movie.duration)}
           </p>
 
-          <p className={styles.synopsis}>{movie.detail.synopsis}</p>
+          <p className={styles.synopsis}>
+            {movie.detail?.synopsis ?? 'No synopsis available.'}
+          </p>
 
           <dl className={styles.infoList}>
             <div className={styles.infoItem}>
               <dt>Director</dt>
-              <dd>{movie.detail.director}</dd>
+              <dd>{movie.detail?.director ?? 'Unknown'}</dd>
             </div>
             <div className={styles.infoItem}>
               <dt>Language</dt>
               <dd>
-                {movie.detail.language.length > 0
+                {movie.detail?.language && movie.detail.language.length > 0
                   ? movie.detail.language
                   : 'English'}
               </dd>
             </div>
           </dl>
 
-          {averageRating > 0 && (
+          {featuredAverageRating > 0 && (
             <div className={styles.ratingSummary}>
-              <Stars rating={Math.round(averageRating)} />
+              <Stars rating={Math.round(featuredAverageRating)} />
               <span className={styles.ratingValue}>
-                {averageRating.toFixed(1)} · {reviewCount} review
+                {featuredAverageRating.toFixed(1)} · {reviewCount} review
                 {reviewCount === 1 ? '' : 's'}
               </span>
             </div>

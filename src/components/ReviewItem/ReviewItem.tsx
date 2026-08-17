@@ -1,6 +1,6 @@
 import type { Review } from '../../types/movie'
 import { useLayoutEffect, useRef, useState } from 'react'
-import { Stars } from '../movie/FeaturedMovie'
+import Stars from '../stars/Stars'
 import styles from './ReviewItem.module.scss'
 
 const ReviewItem = ({ review }: { review: Review }) => {

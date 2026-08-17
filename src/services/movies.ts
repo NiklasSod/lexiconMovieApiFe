@@ -1,5 +1,11 @@
 import { apiFetch } from '../utils/fetchWrapper'
-import type { MovieWithDetail } from '../types/movie'
+import type { Movie, MovieWithDetail } from '../types/movie'
+
+export function getMovies(): Promise<Movie[]> {
+  return apiFetch<Movie[]>('/api/movies', {
+    cache: 'no-store',
+  })
+}
 
 export function getMovieWithDetail(id: number): Promise<MovieWithDetail> {
   return apiFetch<MovieWithDetail>(`/api/movies/withdetail/${id}`, {

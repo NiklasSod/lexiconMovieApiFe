@@ -12,6 +12,16 @@ export interface Review {
   movieId: number
 }
 
+export interface Movie {
+  id: number
+  title: string
+  image: string
+  year: number
+  duration: number
+  genreId: number
+  genreName: string
+}
+
 export interface MovieDetail {
   id: number
   synopsis: string
@@ -28,7 +38,7 @@ export interface MovieWithDetail {
   duration: number
   genreId: number
   genreName: string
-  detail: MovieDetail
+  detail: MovieDetail | null
   actors: Actor[]
   reviews: Review[]
 }

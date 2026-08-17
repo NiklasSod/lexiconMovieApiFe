@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.scss'
+import Header from '@/components/header/Header'
 
 export const metadata: Metadata = {
   title: 'MovieApiFe',
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   )
 }
