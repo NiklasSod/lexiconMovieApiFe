@@ -1,0 +1,79 @@
+.panel {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.panelTitle {
+  margin: 0 0 16px;
+  color: $color-primary;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.empty {
+  margin: 0;
+  color: $color-primary-darker;
+}
+
+.reviewList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reviewItem {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.reviewerName {
+  color: $color-white;
+  font-weight: 600;
+}
+
+.reviewComment {
+  margin: 0;
+  color: $color-primary;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.showMoreButton {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $color-blue;
+  border-radius: 999px;
+  color: $color-blue;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  &:hover {
+    background: $color-blue;
+    color: $color-primary-darker;
+  }
+}

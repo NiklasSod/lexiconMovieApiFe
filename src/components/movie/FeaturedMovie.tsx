@@ -1,7 +1,11 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
 import type { MovieWithDetail } from '@/types/movie'
 import styles from './FeaturedMovie.module.scss'
 import { isProduction } from '../../services/config'
+import ReviewList from '../reviewList/ReviewList'
 
 const formatDuration = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
@@ -9,7 +13,11 @@ const formatDuration = (minutes: number) => {
   return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
 }
 
-function Stars({ rating }: { rating: number }) {
+interface StartsProps {
+  rating: number
+}
+
+export const Stars = ({ rating }: StartsProps) => {
   return (
     <span className={styles.stars} aria-label={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((star) => (
@@ -27,6 +35,7 @@ function Stars({ rating }: { rating: number }) {
 
 export default function FeaturedMovie({ movie }: { movie: MovieWithDetail }) {
   const reviewCount = movie.reviews.length
+  const [visibleReviews, setVisibleReviews] = useState(2)
   const averageRating =
     reviewCount > 0
       ? movie.reviews.reduce((sum, review) => sum + review.rating, 0) /
@@ -109,26 +118,13 @@ export default function FeaturedMovie({ movie }: { movie: MovieWithDetail }) {
           </ul>
         </section>
 
-        <section className={styles.panel}>
-          <h3 className={styles.panelTitle}>Reviews</h3>
-          {reviewCount === 0 ? (
-            <p className={styles.empty}>No reviews yet.</p>
-          ) : (
-            <ul className={styles.reviewList}>
-              {movie.reviews.map((review) => (
-                <li key={review.id} className={styles.reviewItem}>
-                  <div className={styles.reviewHeader}>
-                    <span className={styles.reviewerName}>
-                      {review.reviewerName}
-                    </span>
-                    <Stars rating={review.rating} />
-                  </div>
-                  <p className={styles.reviewComment}>{review.comment}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        <ReviewList
+          key={movie.id}
+          reviews={movie.reviews}
+          visibleReviews={visibleReviews}
+          setVisibleReviews={setVisibleReviews}
+          reviewCount={reviewCount}
+        />
       </div>
     </section>
   )
