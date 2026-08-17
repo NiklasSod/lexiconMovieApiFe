@@ -44,7 +44,7 @@ const ReviewList = ({
               className={styles.showMoreButton}
               onClick={() => setVisibleReviews((count) => count + 1)}
             >
-              Show more
+              More reviews
             </button>
           )}
         </>
