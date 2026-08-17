@@ -1,8 +1,8 @@
+import { useState, Dispatch, SetStateAction } from 'react'
 import type { Review } from '../../types/movie'
-import { Dispatch, SetStateAction, useState } from 'react'
-import { Stars } from '../movie/FeaturedMovie'
 import styles from './ReviewList.module.scss'
 import { useIsClient } from '../../utils/useSyncExternalStore'
+import ReviewItem from '../ReviewItem/ReviewItem'
 
 interface ReviewListProps {
   reviews: Review[]
@@ -35,15 +35,7 @@ const ReviewList = ({
         <>
           <ul className={styles.reviewList}>
             {shuffledReviews.slice(0, visibleReviews).map((review) => (
-              <li key={review.id} className={styles.reviewItem}>
-                <div className={styles.reviewHeader}>
-                  <span className={styles.reviewerName}>
-                    {review.reviewerName}
-                  </span>
-                  <Stars rating={review.rating} />
-                </div>
-                <p className={styles.reviewComment}>{review.comment}</p>
-              </li>
+              <ReviewItem key={review.id} review={review} />
             ))}
           </ul>
           {visibleReviews < reviewCount && (

@@ -28,36 +28,6 @@
   list-style: none;
 }
 
-.reviewItem {
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
-  &:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
-  }
-}
-
-.reviewHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 6px;
-}
-
-.reviewerName {
-  color: $color-white;
-  font-weight: 600;
-}
-
-.reviewComment {
-  margin: 0;
-  color: $color-primary;
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
 .showMoreButton {
   margin-top: 12px;
   padding: 8px 16px;
