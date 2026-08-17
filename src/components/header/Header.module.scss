@@ -1,0 +1,184 @@
+.header {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  min-height: 79px;
+  padding: 20px 32px;
+  background: $color-secondary;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: $color-white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+}
+
+.logoIcon {
+  flex-shrink: 0;
+  color: $color-primary;
+}
+
+.logoAccent {
+  color: $color-primary;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  color: $color-primary;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
+.signIn {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: $color-primary-darker;
+  color: $color-white;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: $color-blue;
+  }
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    border-radius: 2px;
+    background: $color-white;
+    transition:
+      transform 0.25s ease,
+      opacity 0.25s ease;
+  }
+}
+
+.navToggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.navToggle:focus-visible ~ .hamburger {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 0 32px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    background: $color-secondary;
+    border-top: 1px solid transparent;
+    transition:
+      max-height 0.3s ease,
+      opacity 0.3s ease,
+      visibility 0.3s ease,
+      padding 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .navToggle:checked ~ .nav {
+    max-height: 420px;
+    opacity: 1;
+    visibility: visible;
+    padding: 8px 32px 24px;
+    border-top-color: rgba(230, 11, 11, 0.08);
+  }
+
+  .navToggle:checked ~ .hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .navToggle:checked ~ .hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .navToggle:checked ~ .hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .navList {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .navList li {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .navLink {
+    display: block;
+    padding: 14px 0;
+  }
+
+  .signIn {
+    margin-top: 16px;
+    text-align: center;
+  }
+}
