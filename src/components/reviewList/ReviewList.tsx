@@ -2,6 +2,7 @@ import type { Review } from '../../types/movie'
 import { Dispatch, SetStateAction, useState } from 'react'
 import { Stars } from '../movie/FeaturedMovie'
 import styles from './ReviewList.module.scss'
+import { useIsClient } from '../../utils/useSyncExternalStore'
 
 interface ReviewListProps {
   reviews: Review[]
@@ -19,6 +20,11 @@ const ReviewList = ({
   const [shuffledReviews] = useState(() =>
     reviews ? [...reviews].sort(() => Math.random() - 0.5) : [],
   )
+
+  // randomness makes client rendering differ from server
+  // causing a hydration mismatch, solution render nothing on server
+  const isClient = useIsClient()
+  if (!isClient) return null
 
   return (
     <section className={styles.panel}>
