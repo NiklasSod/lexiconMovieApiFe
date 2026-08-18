@@ -2,15 +2,8 @@ import { API_BASE_URL } from '../services/config'
 
 export { API_BASE_URL }
 
-/**
- * Minimal fetch wrapper targeting the configured API base URL.
- * Use it for all requests to the movie API.
- */
-export async function apiFetch<T>(
-  path: string,
-  init?: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+async function request<T>(url: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(url, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
@@ -25,4 +18,12 @@ export async function apiFetch<T>(
   }
 
   return (await response.json()) as T
+}
+
+export function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  return request<T>(`${API_BASE_URL}${path}`, init)
+}
+
+export function clientFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  return request<T>(path, init)
 }
