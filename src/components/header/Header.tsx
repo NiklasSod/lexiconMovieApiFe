@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { cookies } from 'next/headers'
 import styles from './Header.module.scss'
 import FilmIcon from '../icons/FilmIcon'
+import HeaderNav from './HeaderNav'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -26,39 +27,7 @@ const Header = async () => {
         </span>
       </Link>
 
-      <input
-        type="checkbox"
-        id="nav-toggle"
-        className={styles.navToggle}
-        aria-label="Toggle menu"
-      />
-
-      <nav className={styles.nav} aria-label="Main navigation">
-        <ul className={styles.navList}>
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className={styles.navLink}>
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        {/* use Link when login works
-        <Link href="/sign-in" className={styles.signIn}>
-          Sign in
-        </Link>
-        remove button when login works */}
-        <button type="button" className={styles.signIn} disabled>
-          Sign in
-        </button>
-      </nav>
-
-      <label htmlFor="nav-toggle" className={styles.hamburger}>
-        <span />
-        <span />
-        <span />
-      </label>
+      <HeaderNav navLinks={navLinks} />
     </header>
   )
 }
