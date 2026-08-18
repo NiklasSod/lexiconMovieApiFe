@@ -1,19 +1,21 @@
 import { Suspense } from 'react'
 import MovieCard from '@/components/movie/MovieCard'
 import { MovieSortDropdown } from '@/components/movie/MovieSortDropdown'
+import { Pagination } from '@/components/movie/Pagination'
 import { getMovies, getMovieWithDetail } from '@/services/movies'
 import type { MovieWithDetail } from '@/types/movie'
 import { getMovieSort, sortMovies } from '@/utils/movie'
 import styles from './page.module.scss'
 
-const MAX_MOVIES = 10
+const MAX_MOVIES = 20
+const PAGE_SIZE = 4
 
 type MoviesPageProps = {
-  searchParams: Promise<{ sort?: string }>
+  searchParams: Promise<{ sort?: string; page?: string }>
 }
 
 const MoviesPage = async ({ searchParams }: MoviesPageProps) => {
-  const { sort } = await searchParams
+  const { sort, page } = await searchParams
   const currentSort = getMovieSort(sort)
 
   let movies: MovieWithDetail[] = []
@@ -40,6 +42,16 @@ const MoviesPage = async ({ searchParams }: MoviesPageProps) => {
     console.error('Failed to load movies', error)
   }
 
+  const totalPages = Math.max(1, Math.ceil(movies.length / PAGE_SIZE))
+  const requestedPage = Number.parseInt(page ?? '1', 10)
+  const currentPage = Number.isFinite(requestedPage)
+    ? Math.min(Math.max(requestedPage, 1), totalPages)
+    : 1
+  const pageMovies = movies.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  )
+
   return (
     <main className={styles.main}>
       <div className={styles.mainHeader}>
@@ -55,11 +67,16 @@ const MoviesPage = async ({ searchParams }: MoviesPageProps) => {
       </div>
 
       {movies.length > 0 ? (
-        <div className={styles.grid}>
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
-        </div>
+        <>
+          <div className={styles.grid}>
+            {pageMovies.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} />
+            ))}
+          </div>
+          <Suspense fallback={null}>
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
+          </Suspense>
+        </>
       ) : (
         <p className={styles.error}>Could not load movies.</p>
       )}

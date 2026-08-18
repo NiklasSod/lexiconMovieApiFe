@@ -1,0 +1,52 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.page,
+.arrow {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: $color-white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: $color-blue;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-blue;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.active {
+  background-color: $color-blue;
+  border-color: $color-blue;
+}
+
+@media (max-width: 768px) {
+  .page,
+  .arrow {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+  }
+}

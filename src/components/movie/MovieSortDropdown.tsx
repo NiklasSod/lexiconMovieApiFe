@@ -19,6 +19,9 @@ export const MovieSortDropdown = ({ value }: { value: MovieSortKey }) => {
       params.set('sort', next)
     }
 
+    // Change sort reset the list to first page
+    params.delete('page')
+
     const query = params.toString()
     router.replace(query ? `/movies?${query}` : '/movies', { scroll: false })
   }
