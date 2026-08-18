@@ -18,7 +18,10 @@ export default async function Home() {
         {movie ? (
           <FeaturedMovie movie={movie} />
         ) : (
-          <p className={styles.error}>Could not load the highlighted movie.</p>
+          <p className={styles.error}>
+            Could not load the highlighted movie. The database might sleep! Try
+            again in 30 seconds.
+          </p>
         )}
       </main>
     </>

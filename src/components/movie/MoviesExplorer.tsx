@@ -72,7 +72,12 @@ export const MoviesExplorer = ({ sort, page }: MoviesExplorerProps) => {
   )
 
   if (failed) {
-    return <p className={styles.error}>Could not load movies.</p>
+    return (
+      <p className={styles.error}>
+        Could not load movies. The database might sleep! Try again in 30
+        seconds.
+      </p>
+    )
   }
 
   if (!movies) {
@@ -80,7 +85,12 @@ export const MoviesExplorer = ({ sort, page }: MoviesExplorerProps) => {
   }
 
   if (movies.length === 0) {
-    return <p className={styles.error}>Could not load movies.</p>
+    return (
+      <p className={styles.error}>
+        Could not load movies. The database might sleep! Try again in 30
+        seconds.
+      </p>
+    )
   }
 
   return (
