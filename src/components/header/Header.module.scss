@@ -62,6 +62,9 @@
 .signIn {
   display: inline-block;
   padding: 10px 22px;
+  border: 0; // temp when it is a Link again instead of button
+  font-family: inherit; // temp when it is a Link again instead of button
+  cursor: pointer; // temp when it is a Link again instead of button
   border-radius: 8px;
   background: $color-primary-darker;
   color: $color-white;
@@ -69,9 +72,14 @@
   font-size: 0.95rem;
   font-weight: 600;
   transition: background 0.2s ease;
-
-  &:hover {
+  // temp change to "&:hover {" when it is a Link again instead of button
+  &:hover:not(:disabled) {
     background: $color-blue;
+  }
+  // temp remove "&:disabled{}" when it is a Link again instead of button
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 
