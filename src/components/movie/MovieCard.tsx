@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import Image from 'next/image'
 import type { MovieWithDetail } from '@/types/movie'
 import FilmIcon from '../icons/FilmIcon'
@@ -10,7 +11,11 @@ const MovieCard = ({ movie }: { movie: MovieWithDetail }) => {
   const hasImage = movie.image.length > 0
 
   return (
-    <article className={styles.card}>
+    <Link
+      href={`/movies/${movie.id}`}
+      className={styles.card}
+      aria-label={`View details for ${movie.title}`}
+    >
       <div className={styles.poster}>
         {hasImage ? (
           <Image
@@ -52,7 +57,7 @@ const MovieCard = ({ movie }: { movie: MovieWithDetail }) => {
           )}
         </div>
       </div>
-    </article>
+    </Link>
   )
 }
 
