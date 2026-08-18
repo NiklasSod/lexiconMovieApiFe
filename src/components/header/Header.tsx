@@ -11,6 +11,7 @@ const NAV_LINKS = [
 
 const Header = async () => {
   const cookieStore = await cookies()
+  // temp This need to be checked in middleware or elsewhere
   const isSignedIn = Boolean(cookieStore.get('auth_token')?.value)
   const navLinks = isSignedIn
     ? NAV_LINKS
