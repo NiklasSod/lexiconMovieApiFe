@@ -1,18 +1,27 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useEffect, useRef } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import styles from './Header.module.scss'
+import AuthModal from '../auth/AuthModal'
 
 export type NavLink = {
   label: string
   href: string
 }
 
-const HeaderNav = ({ navLinks }: { navLinks: NavLink[] }) => {
+const HeaderNav = ({
+  navLinks,
+  isSignedIn,
+}: {
+  navLinks: NavLink[]
+  isSignedIn: boolean
+}) => {
   const pathname = usePathname()
+  const router = useRouter()
   const toggleRef = useRef<HTMLInputElement>(null)
+  const [isAuthOpen, setIsAuthOpen] = useState(false)
 
   // Always close the mobile menu after navigating to a new URL.
   useEffect(() => {
@@ -20,6 +29,16 @@ const HeaderNav = ({ navLinks }: { navLinks: NavLink[] }) => {
       toggleRef.current.checked = false
     }
   }, [pathname])
+
+  const handleSignOut = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.refresh()
+  }
+
+  const handleAuthSuccess = () => {
+    setIsAuthOpen(false)
+    router.refresh()
+  }
 
   return (
     <>
@@ -42,14 +61,23 @@ const HeaderNav = ({ navLinks }: { navLinks: NavLink[] }) => {
           ))}
         </ul>
 
-        {/* use Link when login works
-        <Link href="/sign-in" className={styles.signIn}>
-          Sign in
-        </Link>
-        remove button when login works */}
-        <button type="button" className={styles.signIn} disabled>
-          Sign in
-        </button>
+        {isSignedIn ? (
+          <button
+            type="button"
+            className={styles.signIn}
+            onClick={handleSignOut}
+          >
+            Sign out
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={styles.signIn}
+            onClick={() => setIsAuthOpen(true)}
+          >
+            Sign in
+          </button>
+        )}
       </nav>
 
       <label htmlFor="nav-toggle" className={styles.hamburger}>
@@ -57,6 +85,13 @@ const HeaderNav = ({ navLinks }: { navLinks: NavLink[] }) => {
         <span />
         <span />
       </label>
+
+      {isAuthOpen && (
+        <AuthModal
+          onClose={() => setIsAuthOpen(false)}
+          onSuccess={handleAuthSuccess}
+        />
+      )}
     </>
   )
 }

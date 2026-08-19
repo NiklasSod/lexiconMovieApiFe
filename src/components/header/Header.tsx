@@ -27,7 +27,7 @@ const Header = async () => {
         </span>
       </Link>
 
-      <HeaderNav navLinks={navLinks} />
+      <HeaderNav navLinks={navLinks} isSignedIn={isSignedIn} />
     </header>
   )
 }
