@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import styles from './Header.module.scss'
 import FilmIcon from '../icons/FilmIcon'
 import HeaderNav from './HeaderNav'
+import { ACCESS_TOKEN_COOKIE } from '@/services/authCookies'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -12,8 +13,7 @@ const NAV_LINKS = [
 
 const Header = async () => {
   const cookieStore = await cookies()
-  // temp This need to be checked in middleware or elsewhere
-  const isSignedIn = Boolean(cookieStore.get('auth_token')?.value)
+  const isSignedIn = Boolean(cookieStore.get(ACCESS_TOKEN_COOKIE)?.value)
   const navLinks = isSignedIn
     ? NAV_LINKS
     : NAV_LINKS.filter((link) => link.href !== '/my-list')

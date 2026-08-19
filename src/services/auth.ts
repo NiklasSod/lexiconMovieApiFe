@@ -22,8 +22,9 @@ type BackendErrorBody = {
   errors?: Record<string, string[]> | string[]
 }
 
-type LoginResponse = {
-  token?: string
+export type TokenPair = {
+  accessToken: string
+  refreshToken: string
 }
 
 async function getErrorMessage(response: Response): Promise<string> {
@@ -81,24 +82,37 @@ async function postJson(path: string, body: unknown): Promise<unknown> {
   return text ? JSON.parse(text) : null
 }
 
-export async function loginOnBackend(
-  credentials: AuthCredentials,
-): Promise<string> {
-  const data = (await postJson(
-    '/api/auth/login',
-    credentials,
-  )) as LoginResponse | null
+function parseTokenPair(data: unknown): TokenPair {
+  const body = (data ?? {}) as Partial<TokenPair>
 
-  const token = data?.token
-  if (!token) {
-    throw new AuthApiError(502, 'The backend did not return an auth token')
+  if (!body.accessToken || !body.refreshToken) {
+    throw new AuthApiError(502, 'The backend did not return auth tokens')
   }
 
-  return token
+  return { accessToken: body.accessToken, refreshToken: body.refreshToken }
+}
+
+export async function loginOnBackend(
+  credentials: AuthCredentials,
+): Promise<TokenPair> {
+  const data = await postJson('/api/auth/login', credentials)
+  return parseTokenPair(data)
 }
 
 export async function registerOnBackend(
   credentials: AuthCredentials,
-): Promise<void> {
-  await postJson('/api/auth/register', credentials)
+): Promise<TokenPair> {
+  const data = await postJson('/api/auth/register', credentials)
+  return parseTokenPair(data)
+}
+
+export async function refreshOnBackend(
+  refreshToken: string,
+): Promise<TokenPair> {
+  const data = await postJson('/api/auth/refresh', { refreshToken })
+  return parseTokenPair(data)
+}
+
+export async function logoutOnBackend(refreshToken: string): Promise<void> {
+  await postJson('/api/auth/logout', { refreshToken })
 }

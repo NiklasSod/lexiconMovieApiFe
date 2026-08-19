@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { AuthApiError, registerOnBackend } from '@/services/auth'
 import {
-  AuthApiError,
-  loginOnBackend,
-  registerOnBackend,
-} from '@/services/auth'
-
-const AUTH_COOKIE_NAME = 'auth_token'
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_MAX_AGE_SECONDS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_MAX_AGE_SECONDS,
+} from '@/services/authCookies'
 
 export async function POST(request: Request) {
   let username: string
@@ -38,19 +38,27 @@ export async function POST(request: Request) {
   }
 
   try {
-    await registerOnBackend({ username, password })
-
-    // Register on its own does not return a token, so sign the new user in
-    // straight away by calling the login endpoint.
-    const token = await loginOnBackend({ username, password })
+    // Register returns the same token pair as login, so the new user is
+    // signed in straight away.
+    const { accessToken, refreshToken } = await registerOnBackend({
+      username,
+      password,
+    })
 
     const cookieStore = await cookies()
-    cookieStore.set(AUTH_COOKIE_NAME, token, {
+    cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+    })
+    cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
     })
 
     return NextResponse.json({ ok: true }, { status: 201 })

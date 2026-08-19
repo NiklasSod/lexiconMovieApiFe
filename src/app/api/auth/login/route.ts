@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { AuthApiError, loginOnBackend } from '@/services/auth'
-
-const AUTH_COOKIE_NAME = 'auth_token'
+import {
+  ACCESS_TOKEN_COOKIE,
+  ACCESS_TOKEN_MAX_AGE_SECONDS,
+  REFRESH_TOKEN_COOKIE,
+  REFRESH_TOKEN_MAX_AGE_SECONDS,
+} from '@/services/authCookies'
 
 export async function POST(request: Request) {
   let username: string
@@ -27,15 +31,25 @@ export async function POST(request: Request) {
   }
 
   try {
-    const token = await loginOnBackend({ username, password })
+    const { accessToken, refreshToken } = await loginOnBackend({
+      username,
+      password,
+    })
 
     const cookieStore = await cookies()
-    cookieStore.set(AUTH_COOKIE_NAME, token, {
+    cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: ACCESS_TOKEN_MAX_AGE_SECONDS,
+    })
+    cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: REFRESH_TOKEN_MAX_AGE_SECONDS,
     })
 
     return NextResponse.json({ ok: true })
