@@ -26,12 +26,6 @@ type LoginResponse = {
   token?: string
 }
 
-/**
- * Tries to extract a human readable message from the C# backend error body.
- * The backend contract for auth errors is not finalised yet, so we accept a
- * few common shapes (message / error / title / validation errors) and fall
- * back to the status text.
- */
 async function getErrorMessage(response: Response): Promise<string> {
   const fallback = `Request failed with status ${response.status}`
 
@@ -63,7 +57,7 @@ async function getErrorMessage(response: Response): Promise<string> {
       if (flattened.length > 0) return flattened.join(', ')
     }
   } catch {
-    // The body is not JSON — fall back to using it as plain text below.
+    // The body is not JSON
   }
 
   const trimmed = text.trim()
@@ -87,13 +81,6 @@ async function postJson(path: string, body: unknown): Promise<unknown> {
   return text ? JSON.parse(text) : null
 }
 
-/**
- * Calls the C# backend login endpoint.
- *
- * NOTE: The backend auth endpoints are not fully implemented yet. This expects
- * POST /api/auth/login to accept `{ username, password }` and return
- * `{ token: string }`.
- */
 export async function loginOnBackend(
   credentials: AuthCredentials,
 ): Promise<string> {
@@ -110,13 +97,6 @@ export async function loginOnBackend(
   return token
 }
 
-/**
- * Calls the C# backend register endpoint.
- *
- * NOTE: The backend auth endpoints are not fully implemented yet. This expects
- * POST /api/auth/register to accept `{ username, password }`. The returned body
- * is ignored — the BFF logs the user in right after registering.
- */
 export async function registerOnBackend(
   credentials: AuthCredentials,
 ): Promise<void> {
