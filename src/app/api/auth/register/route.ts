@@ -38,8 +38,6 @@ export async function POST(request: Request) {
   }
 
   try {
-    // Register returns the same token pair as login, so the new user is
-    // signed in straight away.
     const { accessToken, refreshToken } = await registerOnBackend({
       username,
       password,

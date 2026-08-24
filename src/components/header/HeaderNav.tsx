@@ -1,10 +1,11 @@
 'use client'
 
-import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import styles from './Header.module.scss'
 import AuthModal from '../auth/AuthModal'
+import AddMovieModal from '../movie/AddMovieModal'
+import NavLinks from './NavLinks/NavLinks'
 
 export type NavLink = {
   label: string
@@ -22,6 +23,7 @@ const HeaderNav = ({
   const router = useRouter()
   const toggleRef = useRef<HTMLInputElement>(null)
   const [isAuthOpen, setIsAuthOpen] = useState(false)
+  const [isAddMovieOpen, setIsAddMovieOpen] = useState(false)
 
   // Always close the mobile menu after navigating to a new URL.
   useEffect(() => {
@@ -51,15 +53,11 @@ const HeaderNav = ({
       />
 
       <nav className={styles.nav} aria-label="Main navigation">
-        <ul className={styles.navList}>
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className={styles.navLink}>
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <NavLinks
+          navLinks={navLinks}
+          isSignedIn={isSignedIn}
+          setIsAddMovieOpen={setIsAddMovieOpen}
+        />
 
         {isSignedIn ? (
           <button
@@ -90,6 +88,16 @@ const HeaderNav = ({
         <AuthModal
           onClose={() => setIsAuthOpen(false)}
           onSuccess={handleAuthSuccess}
+        />
+      )}
+
+      {isAddMovieOpen && (
+        <AddMovieModal
+          onClose={() => setIsAddMovieOpen(false)}
+          onSuccess={() => {
+            setIsAddMovieOpen(false)
+            router.refresh()
+          }}
         />
       )}
     </>

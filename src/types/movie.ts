@@ -30,6 +30,13 @@ export interface MovieDetail {
   budget: number
 }
 
+export interface MovieDetailInput {
+  synopsis: string
+  director: string
+  language: string
+  budget: number
+}
+
 export interface MovieWithDetail {
   id: number
   title: string
@@ -41,4 +48,18 @@ export interface MovieWithDetail {
   detail: MovieDetail | null
   actors: Actor[]
   reviews: Review[]
+}
+
+export interface Genre {
+  id: number
+  name: string
+}
+
+export interface MovieCreateInput {
+  title: string
+  image: string
+  year: number
+  duration: number
+  genreId: number
+  detail?: MovieDetailInput
 }
