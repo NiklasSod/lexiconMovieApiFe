@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import MovieCard from './MovieCard'
 import { Pagination } from './Pagination'
 import { getMoviesClient, getMovieWithDetailClient } from '@/services/movies'
@@ -11,6 +11,23 @@ import styles from '../../app/movies/page.module.scss'
 const MAX_MOVIES = 20
 const PAGE_SIZE = 4
 
+async function fetchMovies(): Promise<MovieWithDetail[]> {
+  const allMovies = await getMoviesClient()
+
+  const details = await Promise.all(
+    allMovies.map(async (movie) => {
+      try {
+        return await getMovieWithDetailClient(movie.id)
+      } catch (error) {
+        console.error(`Failed to load movie ${movie.id}`, error)
+        return null
+      }
+    }),
+  )
+
+  return details.filter((movie): movie is MovieWithDetail => movie !== null)
+}
+
 type MoviesExplorerProps = {
   sort: MovieSortKey
   page?: string
@@ -20,28 +37,25 @@ export const MoviesExplorer = ({ sort, page }: MoviesExplorerProps) => {
   const [movies, setMovies] = useState<MovieWithDetail[] | null>(null)
   const [failed, setFailed] = useState(false)
 
+  const refresh = useCallback(async () => {
+    try {
+      setMovies(await fetchMovies())
+      setFailed(false)
+    } catch (error) {
+      console.error('Failed to load movies', error)
+      setFailed(true)
+    }
+  }, [])
+
   useEffect(() => {
     let cancelled = false
 
-    const load = async () => {
+    const start = async () => {
       try {
-        const allMovies = await getMoviesClient()
-
-        const details = await Promise.all(
-          allMovies.map(async (movie) => {
-            try {
-              return await getMovieWithDetailClient(movie.id)
-            } catch (error) {
-              console.error(`Failed to load movie ${movie.id}`, error)
-              return null
-            }
-          }),
-        )
-
+        const result = await fetchMovies()
         if (!cancelled) {
-          setMovies(
-            details.filter((movie): movie is MovieWithDetail => movie !== null),
-          )
+          setMovies(result)
+          setFailed(false)
         }
       } catch (error) {
         console.error('Failed to load movies', error)
@@ -49,12 +63,19 @@ export const MoviesExplorer = ({ sort, page }: MoviesExplorerProps) => {
       }
     }
 
-    load()
+    start()
+
+    const handleMoviesUpdated = () => {
+      if (!cancelled) refresh()
+    }
+
+    window.addEventListener('movies-updated', handleMoviesUpdated)
 
     return () => {
       cancelled = true
+      window.removeEventListener('movies-updated', handleMoviesUpdated)
     }
-  }, [])
+  }, [refresh])
 
   const sorted = useMemo(
     () => (movies ? sortMovies(movies, sort).slice(0, MAX_MOVIES) : []),
