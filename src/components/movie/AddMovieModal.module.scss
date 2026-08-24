@@ -112,6 +112,91 @@
   color: $color-white;
 }
 
+.genreAdd {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.genreAddToggle {
+  align-self: flex-start;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: $color-primary-darker;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
+.genreAddForm {
+  display: flex;
+  gap: 8px;
+}
+
+.genreAddInput {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: $color-white;
+  font-size: 0.9rem;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: $color-blue;
+  }
+}
+
+.genreAddButton {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: $color-blue;
+  color: $color-white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #006bd8;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.genreAddCancel {
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: $color-primary-darker;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
 .detailsToggleWrap {
   display: flex;
   justify-content: flex-start;

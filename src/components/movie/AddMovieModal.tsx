@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { createMovie, getMoviesClient } from '@/services/movies'
+import { createGenre } from '@/services/genres'
 import type { Genre, MovieCreateInput } from '@/types/movie'
 import styles from './AddMovieModal.module.scss'
 
@@ -26,6 +27,11 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
   const [genres, setGenres] = useState<Genre[] | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const [newGenre, setNewGenre] = useState('')
+  const [isAddingGenre, setIsAddingGenre] = useState(false)
+  const [showGenreInput, setShowGenreInput] = useState(false)
+  const [genreError, setGenreError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -145,6 +151,46 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
     }
   }
 
+  const handleAddGenre = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setGenreError(null)
+
+    const name = newGenre.trim()
+    if (!name) {
+      setGenreError('Genre name is required')
+      return
+    }
+
+    const existing = genres?.find(
+      (genre) => genre.name.toLowerCase() === name.toLowerCase(),
+    )
+    if (existing) {
+      setGenreId(String(existing.id))
+      setNewGenre('')
+      setShowGenreInput(false)
+      return
+    }
+
+    setIsAddingGenre(true)
+    try {
+      const created = await createGenre(name)
+      setGenres((current) =>
+        [...(current ?? []), created].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      )
+      setGenreId(String(created.id))
+      setNewGenre('')
+      setShowGenreInput(false)
+    } catch (err) {
+      setGenreError(
+        err instanceof Error ? err.message : 'Could not create genre',
+      )
+    } finally {
+      setIsAddingGenre(false)
+    }
+  }
+
   return (
     <div className={styles.overlay} onClick={close}>
       <div
@@ -242,6 +288,52 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
               ))}
             </select>
           </label>
+
+          <div className={styles.genreAdd}>
+            {showGenreInput ? (
+              <form className={styles.genreAddForm} onSubmit={handleAddGenre}>
+                <input
+                  className={styles.genreAddInput}
+                  type="text"
+                  value={newGenre}
+                  onChange={(e) => setNewGenre(e.target.value)}
+                  placeholder="e.g. Comedy"
+                  aria-label="New genre name"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className={styles.genreAddButton}
+                  disabled={isAddingGenre}
+                >
+                  {isAddingGenre ? 'Adding…' : 'Add'}
+                </button>
+                <button
+                  type="button"
+                  className={styles.genreAddCancel}
+                  onClick={() => {
+                    setShowGenreInput(false)
+                    setNewGenre('')
+                    setGenreError(null)
+                  }}
+                >
+                  Cancel
+                </button>
+              </form>
+            ) : (
+              <button
+                type="button"
+                className={styles.genreAddToggle}
+                onClick={() => {
+                  setShowGenreInput(true)
+                  setGenreError(null)
+                }}
+              >
+                + Can&apos;t find your genre? Add it
+              </button>
+            )}
+            {genreError && <p className={styles.error}>{genreError}</p>}
+          </div>
 
           <div className={styles.detailsToggleWrap}>
             <button
