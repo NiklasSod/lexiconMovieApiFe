@@ -1,4 +1,4 @@
-import { apiFetch } from '@/utils/fetchWrapper'
+import { apiFetch, clientFetch } from '@/utils/fetchWrapper'
 import type { Genre } from '../types/movie'
 
 export async function createGenre(name: string): Promise<Genre> {
@@ -21,8 +21,14 @@ export async function createGenre(name: string): Promise<Genre> {
   })
 }
 
-export function getGenres(): Promise<Genre[]> {
+export function getGenresServer(): Promise<Genre[]> {
   return apiFetch<Genre[]>('/api/genre', {
+    cache: 'no-store',
+  })
+}
+
+export function getGenres(): Promise<Genre[]> {
+  return clientFetch<Genre[]>('/api/genre', {
     cache: 'no-store',
   })
 }

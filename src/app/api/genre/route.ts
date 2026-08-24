@@ -2,6 +2,20 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { API_BASE_URL } from '@/services/config'
 import { ACCESS_TOKEN_COOKIE } from '@/services/authCookies'
+import { getGenresServer } from '@/services/genres'
+
+export async function GET() {
+  try {
+    const genres = await getGenresServer()
+    return NextResponse.json(genres)
+  } catch (error) {
+    console.error('Failed to fetch genres', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch genres' },
+      { status: 502 },
+    )
+  }
+}
 
 function extractErrorMessage(body: unknown): string | null {
   if (typeof body === 'string' && body.trim()) return body.trim()

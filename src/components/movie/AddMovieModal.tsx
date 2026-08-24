@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { createMovie, getMoviesClient } from '@/services/movies'
-import { createGenre } from '@/services/genres'
+import { createMovie } from '@/services/movies'
+import { createGenre, getGenres } from '@/services/genres'
 import type { Genre, MovieCreateInput } from '@/types/movie'
 import styles from './AddMovieModal.module.scss'
 
@@ -34,28 +34,13 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
   const [genreError, setGenreError] = useState<string | null>(null)
 
   useEffect(() => {
-    let cancelled = false
-
-    getMoviesClient()
-      .then((movies) => {
-        if (cancelled) return
-        const unique = Array.from(
-          new Map(
-            movies.map((movie) => [
-              movie.genreId,
-              { id: movie.genreId, name: movie.genreName },
-            ]),
-          ).values(),
-        ).sort((a, b) => a.name.localeCompare(b.name))
-        setGenres(unique)
+    getGenres()
+      .then((genres) => {
+        setGenres(genres)
       })
       .catch(() => {
-        if (!cancelled) setGenres([])
+        setGenres([])
       })
-
-    return () => {
-      cancelled = true
-    }
   }, [])
 
   const close = () => {
@@ -151,7 +136,11 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
     }
   }
 
-  const handleAddGenre = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddGenre = async (
+    e:
+      | React.MouseEvent<HTMLButtonElement, MouseEvent>
+      | React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     e.preventDefault()
     setGenreError(null)
 
@@ -291,12 +280,18 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
 
           <div className={styles.genreAdd}>
             {showGenreInput ? (
-              <form className={styles.genreAddForm} onSubmit={handleAddGenre}>
+              <div className={styles.genreAddForm}>
                 <input
                   className={styles.genreAddInput}
                   type="text"
                   value={newGenre}
                   onChange={(e) => setNewGenre(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      handleAddGenre(e)
+                    }
+                  }}
                   placeholder="e.g. Comedy"
                   aria-label="New genre name"
                   autoFocus
@@ -305,6 +300,7 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
                   type="submit"
                   className={styles.genreAddButton}
                   disabled={isAddingGenre}
+                  onClick={(e) => handleAddGenre(e)}
                 >
                   {isAddingGenre ? 'Adding…' : 'Add'}
                 </button>
@@ -319,7 +315,7 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
                 >
                   Cancel
                 </button>
-              </form>
+              </div>
             ) : (
               <button
                 type="button"
