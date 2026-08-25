@@ -83,8 +83,10 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
 
     const imageValue = image.trim()
 
-    const shouldUploadImage =
+    const isTmdbPoster =
       !!imageValue && isTmdbImageUrl(imageValue) && isWebpOrJpgUrl(imageValue)
+    const shouldUploadToBlob =
+      isTmdbPoster && process.env.NODE_ENV === 'production'
 
     const yearNum = Number(year)
     if (!Number.isInteger(yearNum) || yearNum < 1888 || yearNum > 2100) {
@@ -117,12 +119,17 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
     setIsSubmitting(true)
     try {
       let imageUrl = ''
-      if (shouldUploadImage) {
-        setIsUploadingImage(true)
-        try {
-          imageUrl = await uploadImageToBlob(imageValue)
-        } finally {
-          setIsUploadingImage(false)
+      if (isTmdbPoster) {
+        if (shouldUploadToBlob) {
+          setIsUploadingImage(true)
+          try {
+            imageUrl = await uploadImageToBlob(imageValue)
+          } finally {
+            setIsUploadingImage(false)
+          }
+        } else {
+          // Local dev: keep the TMDB URL directly, no blob upload.
+          imageUrl = imageValue
         }
       }
 
@@ -241,9 +248,8 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
               placeholder="https://image.tmdb.org/t/p/w600_and_h900_face/xxx.webp|jpg|jpeg"
             />
             <p className={styles.hint}>
-              Only TMDB posters (image.tmdb.org/t/p/w600_and_h900_face,
-              .webp|jpg|jpeg) are uploaded to your blob store. Other URLs are
-              ignored.
+              Only TMDB posters (image.tmdb.org/t/p/w600_and_h900_face, .webp |
+              jpg | jpeg) are uploaded.
             </p>
           </label>
 
