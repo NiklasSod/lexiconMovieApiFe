@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createMovie } from '@/services/movies'
 import { createGenre, getGenres } from '@/services/genres'
+import { uploadImageToBlob } from '@/services/imageUpload'
+import { isTmdbImageUrl, isWebpUrl } from '@/utils/tmdbImage'
 import type { Genre, MovieCreateInput } from '@/types/movie'
 import styles from './AddMovieModal.module.scss'
 
@@ -26,6 +28,7 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
 
   const [genres, setGenres] = useState<Genre[] | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const [newGenre, setNewGenre] = useState('')
@@ -78,6 +81,11 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
       return
     }
 
+    const imageValue = image.trim()
+
+    const shouldUploadImage =
+      !!imageValue && isTmdbImageUrl(imageValue) && isWebpUrl(imageValue)
+
     const yearNum = Number(year)
     if (!Number.isInteger(yearNum) || yearNum < 1888 || yearNum > 2100) {
       setError('Year must be a whole number between 1888 and 2100')
@@ -106,26 +114,36 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
       return
     }
 
-    const input: MovieCreateInput = {
-      title: title.trim(),
-      image: image.trim(),
-      year: yearNum,
-      duration: durationNum,
-      genreId: genreNum,
-      ...(hasDetailInput
-        ? {
-            detail: {
-              synopsis: synopsis.trim(),
-              director: director.trim(),
-              language: language.trim(),
-              budget: budgetNum,
-            },
-          }
-        : {}),
-    }
-
     setIsSubmitting(true)
     try {
+      let imageUrl = ''
+      if (shouldUploadImage) {
+        setIsUploadingImage(true)
+        try {
+          imageUrl = await uploadImageToBlob(imageValue)
+        } finally {
+          setIsUploadingImage(false)
+        }
+      }
+
+      const input: MovieCreateInput = {
+        title: title.trim(),
+        image: imageUrl,
+        year: yearNum,
+        duration: durationNum,
+        genreId: genreNum,
+        ...(hasDetailInput
+          ? {
+              detail: {
+                synopsis: synopsis.trim(),
+                director: director.trim(),
+                language: language.trim(),
+                budget: budgetNum,
+              },
+            }
+          : {}),
+      }
+
       await createMovie(input)
       window.dispatchEvent(new Event('movies-updated'))
       onSuccess()
@@ -220,8 +238,12 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
               type="url"
               value={image}
               onChange={(e) => setImage(e.target.value)}
-              placeholder="https://example.com/poster.jpg"
+              placeholder="https://image.tmdb.org/t/p/w600_and_h900_face/xxx.webp"
             />
+            <p className={styles.hint}>
+              Only TMDB posters (image.tmdb.org/t/p/w600_and_h900_face, .webp)
+              are uploaded to your blob store. Other URLs are ignored.
+            </p>
           </label>
 
           <div className={styles.row}>
@@ -418,7 +440,11 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
             className={styles.submit}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Adding…' : 'Add movie'}
+            {isUploadingImage
+              ? 'Uploading image…'
+              : isSubmitting
+                ? 'Adding…'
+                : 'Add movie'}
           </button>
         </form>
       </div>
