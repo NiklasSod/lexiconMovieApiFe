@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { put } from '@vercel/blob'
 import { ACCESS_TOKEN_COOKIE } from '@/services/authCookies'
-import { isTmdbImageUrl, isWebpUrl } from '@/utils/tmdbImage'
+import { isTmdbImageUrl, isWebpOrJpgUrl } from '@/utils/tmdbImage'
 
 const MAX_IMAGE_BYTES = 0.5 * 1024 * 1024 // 0.5 MB
+
+/** Map a filename extension to the correct content-type for the blob. */
+function contentTypeFor(fileName: string): string {
+  return /\.jpe?g$/i.test(fileName) ? 'image/jpeg' : 'image/webp'
+}
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
@@ -42,9 +47,9 @@ export async function POST(request: Request) {
     )
   }
 
-  if (!isWebpUrl(url)) {
+  if (!isWebpOrJpgUrl(url)) {
     return NextResponse.json(
-      { message: 'TMDB images must be in .webp format' },
+      { message: 'TMDB images must be in .webp, .jpg or .jpeg format' },
       { status: 400 },
     )
   }
@@ -76,7 +81,7 @@ export async function POST(request: Request) {
 
     const blob = await put(pathname, data, {
       access: 'public',
-      contentType: 'image/webp',
+      contentType: contentTypeFor(fileName),
       addRandomSuffix: true,
     })
 

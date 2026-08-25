@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createMovie } from '@/services/movies'
 import { createGenre, getGenres } from '@/services/genres'
 import { uploadImageToBlob } from '@/services/imageUpload'
-import { isTmdbImageUrl, isWebpUrl } from '@/utils/tmdbImage'
+import { isTmdbImageUrl, isWebpOrJpgUrl } from '@/utils/tmdbImage'
 import type { Genre, MovieCreateInput } from '@/types/movie'
 import styles from './AddMovieModal.module.scss'
 
@@ -84,7 +84,7 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
     const imageValue = image.trim()
 
     const shouldUploadImage =
-      !!imageValue && isTmdbImageUrl(imageValue) && isWebpUrl(imageValue)
+      !!imageValue && isTmdbImageUrl(imageValue) && isWebpOrJpgUrl(imageValue)
 
     const yearNum = Number(year)
     if (!Number.isInteger(yearNum) || yearNum < 1888 || yearNum > 2100) {
@@ -238,11 +238,12 @@ const AddMovieModal = ({ onClose, onSuccess }: AddMovieModalProps) => {
               type="url"
               value={image}
               onChange={(e) => setImage(e.target.value)}
-              placeholder="https://image.tmdb.org/t/p/w600_and_h900_face/xxx.webp"
+              placeholder="https://image.tmdb.org/t/p/w600_and_h900_face/xxx.webp|jpg|jpeg"
             />
             <p className={styles.hint}>
-              Only TMDB posters (image.tmdb.org/t/p/w600_and_h900_face, .webp)
-              are uploaded to your blob store. Other URLs are ignored.
+              Only TMDB posters (image.tmdb.org/t/p/w600_and_h900_face,
+              .webp|jpg|jpeg) are uploaded to your blob store. Other URLs are
+              ignored.
             </p>
           </label>
 
